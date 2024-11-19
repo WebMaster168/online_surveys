@@ -1,0 +1,44 @@
+
+.description__title{
+    padding-top: 20px;
+    display: flex;
+    
+    padding-bottom: 20px;
+    
+    
+
+}
+
+.description__input{
+    border: none;
+    padding-right: 15px;
+    padding-left: 0;
+    border-bottom: 2px solid rgb(209, 213, 217);
+    outline: none;
+    resize: none;
+    width: 100%;
+    font-size: 12px;
+    overflow: hidden;
+    line-height: 16px;
+    
+}
+.description__input:focus{
+    border-bottom: 2px solid rgb(103, 58, 183);
+}
+.description__setValueTitle{
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+}
+.description__label{
+    font-size: 12px;
+    width: 94.5%;
+    line-height: 16px;
+    padding-top: 3px;
+    white-space: pre-line;
+}
+
+
+
+
