@@ -3,6 +3,7 @@ import React from 'react';
 import './newSurveyPage.css'
 import DescriptionField from './DescriptionField/DescriptionField';
 import TitleInput from './TitleField/TitleField';
+import QuestionsField from './QuestionsField/questionsField';
 
 const NewSurveyPage = () => {
     
@@ -10,7 +11,21 @@ const NewSurveyPage = () => {
         id:1,
         name: "Новая анкета",
         description: `Описание`,
-        questions: [],
+        questions: [
+            {
+                id: 1,
+                type: "short_answer",
+                text: "Введите название вопроса",
+                options: [
+                    {
+                        id: 1,
+                        text: "Введите вариант ответа"
+                    }
+                    
+                ]
+            }
+          
+        ],
       });
     const [nameEdit, setNameEdit] = React.useState(false)
     const [nameSurvey, setNameSurvey] = React.useState(survey.name)
@@ -62,14 +77,86 @@ const NewSurveyPage = () => {
             
         }
       };
-    
       
+
+      const handleChangeQuestionTitle = (questionIndex, newTitle) => {
+        const updatedQuestions = survey.questions.map((question, index) => {
+            if (index === questionIndex) {
+                return { ...question, text: newTitle }; // Обновляем текст вопроса
+            }
+            return question;
+        });
+
+        setSurvey({ ...survey, questions: updatedQuestions });
+    };
+      
+        const handleChangeQuestionOption = (questionIndex, optInd, optionNewText) => {
+            const updatedQuestions = survey.questions.map((question, index) => {
+                if (index === questionIndex) {
+                    // Если это нужный вопрос, обновляем его опции
+                    const updatedQuestionOptions = question.options.map((option, optionIndex)=>{
+                        if(optInd === optionIndex){
+                            return {...option, text:optionNewText};// Обновляем текст опции
+                        }
+                        
+                        return option;// Возвращаем неизмененные опции
+                    })
+
+                    // Возвращаем обновленный вопрос с новыми опциями
+                    return { ...question, options: updatedQuestionOptions };
+                }
+                
+                return question;
+            });
+    
+            setSurvey({ ...survey, questions: updatedQuestions });
+        }
+
+
+      const handleAddOption = (questionIndex) => {
+        const newQuestions = survey.questions.map((question, i) => {
+          if (i === questionIndex) {
+            return {
+              ...question,
+              options: [...question.options, {text:"Введите вариант ответа"}],
+            };
+          }
+    
+          return question;
+        });
+    
+        setSurvey({
+          ...survey,
+          questions: newQuestions,
+        });
+      };
+     
+      const handleRemoveOption = (questionIndex, optionIndex) => {
+        const newQuestions = survey.questions.map((question, i) => {
+            if (i === questionIndex) {
+                const newOptions = question.options.filter((_, j) => j !== optionIndex);
+                return {
+                    ...question,
+                    options: newOptions,
+                };
+            }
+            return question;
+        });
+    
+        setSurvey({
+            ...survey,
+            questions: newQuestions,
+        });
+    };
+    
+    
+
     return ( 
       <div className='container'>
-        <div className='createSurvey__inner'>
-            <div className='createSurvey__borderTop'></div>
+        <div className='container__content'>
+            <div className='borderTop'></div>
             <div className="createSurvey__descriptionBlock">
-               <div className='createSurvey__borderLeft'></div>
+               <div className='borderLeft'></div>
                 <TitleInput 
                     nameEdit={nameEdit}
                     nameSurvey={nameSurvey}
@@ -90,6 +177,16 @@ const NewSurveyPage = () => {
             </div>
             
         </div>
+        <div className='container__content'>
+            <QuestionsField 
+                questions={survey.questions} 
+                handleAddOption={handleAddOption} 
+                handleRemoveOption={handleRemoveOption} 
+                handleChangeQuestionTitle={handleChangeQuestionTitle}
+                handleChangeQuestionOption={handleChangeQuestionOption} 
+            />
+        </div>
+        
       </div>
     );
 }

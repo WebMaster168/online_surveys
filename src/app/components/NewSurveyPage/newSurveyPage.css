@@ -9,19 +9,19 @@
     border-bottom-right-radius: 12px;
 }
 
-.createSurvey__borderTop{
+.borderTop{
     width: 100%;
     background-color: rgb(103, 58, 183);
     height: 10px;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
-.createSurvey__inner{
+.container__content{
     max-width: 770px;
     margin: 0 auto;
     margin-top: 25px;
 }
-.createSurvey__borderLeft{
+.borderLeft{
     display: none;
     position: absolute;
     width: 6px;
@@ -29,6 +29,6 @@
     left: 0;
     background-color: #4285F4;
 }
-.createSurvey__descriptionBlock:hover .createSurvey__borderLeft{
+.createSurvey__descriptionBlock:hover .borderLeft{
     display: block;
 }
