@@ -5,7 +5,7 @@ import Question from './Question/question';
 const QuestionsField = ({questions, handleAddOption, handleRemoveOption, handleChangeQuestionTitle, handleChangeQuestionOption}) => {
     return (
         <div className='questionsField'>
-            <div className='borderTop'></div>
+            <div className='borderTop borderTop--orange'></div>
             <h1 className='questionsField__title'>Вопросы данной анкеты</h1>
             <div className='questionsField__main'>
             {

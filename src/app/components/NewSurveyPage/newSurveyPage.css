@@ -16,6 +16,9 @@
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
+.borderTop--orange{
+    background-color: rosybrown;
+}
 .container__content{
     max-width: 770px;
     margin: 0 auto;

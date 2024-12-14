@@ -1,0 +1,44 @@
+.select{
+    &__popup{
+        width: 100%;
+    }
+}
+.think__form-select {
+    cursor: pointer;
+    padding: 10px 30px;
+    
+    
+    border: 1px solid #ccc;
+    font-size: 11px;
+    width: 220px;
+    text-align: center;
+    line-height: 16px;
+}
+
+.think__form-popup {
+    display: none; /* Не отображать по умолчанию */
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    width: 220px;
+    li{
+        font-size: 12px;
+        padding: 10px;
+        cursor: pointer;
+    }
+}
+.think__form{
+    width: 220px;
+}
+.think__form-popup.active {
+    display: block; /* Показывать при активном состоянии */
+}
+
+.think__form-tab {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.think__form-tab.active {
+    font-weight: bold; /* Пример выделения активной вкладки */
+}

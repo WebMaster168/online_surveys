@@ -1,8 +1,19 @@
 .question{
+    
     li{
         list-style: none;
     }
+    /*display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "QuestionText QuestionType"
+      "Options Options";*/
     &__inputTitle{
+        display: flex;
+        justify-content: space-between;
         input{
             border:none;
             border-bottom: 4px solid blue;
@@ -10,23 +21,30 @@
             padding: 10px;
             border-radius: 5px;
             width: 100%;
+            grid-area: QuestionText;
+        }
+        &Wrapper{
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
         }
         
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
         &-index{
             margin-right: 5px;
             font-size: 18px;
         }
         &-field{
-            width: 45%;
+            width: 60%;
             
         }
     }
+    &__typeWrapper{
+        
+    }
     &__option{
         margin-bottom: 15px;
-        width: 35%;
+        width: 38%;
         position: relative;
         display: flex;
         align-items: center;
@@ -49,7 +67,7 @@
         }
         &-close{
             position: absolute;
-            right: -40px;
+            right: -30px;
             top: 7%;
             font-size: 35px;
             transform: rotate(45deg);
@@ -70,6 +88,8 @@
     }
     &__optionsField{
         padding-left: 17px;
+        //grid-area: Options;
     }
 }
 
+  
