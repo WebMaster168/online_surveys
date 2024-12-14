@@ -1,5 +1,5 @@
 import React from 'react';
-import './question.css';
+import './question.scss';
 import Option from './option';
 
 const Question = ({questionTitle, options, handleAddOption, handleRemoveOption, handleChangeQuestionTitle, questionIndex, handleChangeQuestionOption}) => {
@@ -8,7 +8,8 @@ const Question = ({questionTitle, options, handleAddOption, handleRemoveOption, 
     return (
         <div className='question'>
             <div className='question__inputTitle'>
-                <input type="text" placeholder={questionTitle} onChange={(e) => handleChangeQuestionTitle(questionIndex, e.target.value)}/>
+                <li className='question__inputTitle-index'>{questionIndex+1}.</li>
+                <li className='question__inputTitle-field'><input type="text" placeholder={questionTitle} onChange={(e) => handleChangeQuestionTitle(questionIndex, e.target.value)}/></li>
             </div>
             <div className='question__optionsField'>
                 {options.map((option, index)=>(
@@ -23,11 +24,12 @@ const Question = ({questionTitle, options, handleAddOption, handleRemoveOption, 
                 ))}
                 
                 
-                <button type="button" className='question__button' onClick={() => handleAddOption()}>
-                    Добавить вариант ответа
-                </button>
+                
                 
             </div>
+            <button type="button" className='question__button' onClick={() => handleAddOption()}>
+                Добавить вариант ответа
+            </button>
         </div>
     )
 }
