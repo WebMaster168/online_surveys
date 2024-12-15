@@ -1,7 +1,7 @@
 import React from 'react';
 import './question.scss';
 import Option from './option';
-import Test from './test';
+import SelectType from './selectType';
 
 const Question = ({questionTitle, options, handleAddOption, handleRemoveOption, handleChangeQuestionTitle, questionIndex, handleChangeQuestionOption}) => {
     let optionsLength = options.length
@@ -13,9 +13,9 @@ const Question = ({questionTitle, options, handleAddOption, handleRemoveOption, 
                     <li className='question__inputTitle-index'>{questionIndex+1}.</li>
                     <li className='question__inputTitle-field'><input type="text" placeholder={questionTitle} onChange={(e) => handleChangeQuestionTitle(questionIndex, e.target.value)}/></li>
                 </div>
-                <div className='question__typeWrapper'>
-                    <Test />     
-                </div>
+                
+                <SelectType />     
+                
             </div>
             
             <div className='question__optionsField'>
