@@ -1,0 +1,55 @@
+.selectType{
+    width: 220px;
+    &__popup{
+        width: 100%;
+        display: none; /* Не отображать по умолчанию */
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        width: 220px;
+        li{
+            font-size: 12px;
+            padding: 9px;
+            cursor: pointer;
+        }
+        &.active{
+            display: block;
+        }
+    }
+    &__current{
+        cursor: pointer;
+        padding: 10px 30px;
+        position: relative;
+        display: flex;
+        border: 1px solid #ccc;
+        font-size: 11px;
+        width: 220px;
+        text-align: center;
+        line-height: 16px;
+        justify-content: center;
+        &-icon{
+            position: absolute;
+            left: 5px;
+            top:16%;
+        }
+        &-text{
+            text-align: center;
+        }
+    }
+    &__item{
+        position: relative;
+        
+        &-icon{
+            position: absolute;
+            right: 5px;
+            top: 2px;
+        }
+    }
+}
+
+
+
+
+
+
+

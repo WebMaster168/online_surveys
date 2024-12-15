@@ -1,0 +1,14 @@
+.questionsField{
+    background-color: white;
+}
+.questionsField__main{
+    padding-left: 24px;
+    padding-bottom: 20px;
+    padding-right: 24px;
+    
+}
+.questionsField__title{
+    text-align: center;
+    margin-top: 24px;
+    margin-bottom: 15px;
+}
