@@ -21,7 +21,7 @@ const SelectType = () => {
         { id: 'drop_down_list', title: 'Раскрывающийся список', iconSource: arrow_drop_down},
         { id: 'rank_list', title: 'Ранговый список', iconSource: format_list_numbered}
     ];
-    const [currentType, setCurrentType] = useState(questionTypes[3].id);
+    const [currentType, setCurrentType] = useState(questionTypes[4].id);
     const handleTypeSelect = (typeTitle, typeId) => {
         setSelectedQuestionType(typeTitle);
         setCurrentType(typeId);
@@ -46,20 +46,20 @@ const SelectType = () => {
                 <p className='selectType__current-text'>{selectedQuestionType || 'Раскрывающийся список (по умолчанию)'}</p>
             </div>
             
-                <ul className={`selectType__popup ${isOpen ? 'active' : ''}`}>
-                    {questionTypes.map(type => (
-                        <li className='selectType__item'
-                            key={type.id}
-                            data-type={type.title}
-                            id={type.id}
-                            onClick={() => handleTypeSelect(type.title, type.id)}
-                        >
-                            <span className='selectType__item-icon'><img src={type.iconSource} alt="icon-select-popup" /></span>
-                            <p>{type.title}</p>
-                            
-                        </li>
-                    ))}
-                </ul>
+            <ul className={`selectType__popup ${isOpen ? 'active' : ''}`}>
+                {questionTypes.map(type => (
+                    <li className='selectType__item'
+                        key={type.id}
+                        data-type={type.title}
+                        id={type.id}
+                        onClick={() => handleTypeSelect(type.title, type.id)}
+                    >
+                        <span className='selectType__item-icon'><img src={type.iconSource} alt="icon-select-popup" /></span>
+                        <p>{type.title}</p>
+                        
+                    </li>
+                ))}
+            </ul>
             
             
         </div>

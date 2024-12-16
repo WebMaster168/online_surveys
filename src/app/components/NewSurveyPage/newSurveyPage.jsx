@@ -28,6 +28,23 @@ const NewSurveyPage = () => {
         ],
       });
 
+      const addNewQuestion = () => {
+        const newQuestion = {
+            id: 1,
+            type: "short_answer",
+            text: "Введите название вопроса",
+            options: [
+                {
+                    id: 1,
+                    text: "Введите вариант ответа"
+                }
+                
+            ]
+        }
+        survey.questions.push(newQuestion)
+        setSurvey({...survey})
+        
+      }
     
     /** Хранение состояния названия анкеты **/
     const [nameSurvey, setNameSurvey] = React.useState(survey.name) 
@@ -194,7 +211,7 @@ const NewSurveyPage = () => {
     
 
     return ( 
-      <div className='container'>
+      <div className='createSurvey'>
         <div className='container__content'>
             <div className='borderTop'></div>
             <div className="createSurvey__descriptionBlock">
@@ -227,6 +244,8 @@ const NewSurveyPage = () => {
                 handleChangeQuestionTitle={handleChangeQuestionTitle}
                 handleChangeQuestionOption={handleChangeQuestionOption} 
             />
+
+            <button className='addQuestion' onClick={()=>addNewQuestion()}>Добавить новый вопрос</button>
         </div>
         
       </div>

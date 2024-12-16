@@ -1,5 +1,8 @@
 .question{
-    
+    & + .question{
+       margin-top: 25px; 
+    }
+    //margin-bottom: 25px;
     li{
         list-style: none;
     }
