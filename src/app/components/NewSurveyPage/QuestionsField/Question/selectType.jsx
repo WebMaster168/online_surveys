@@ -3,8 +3,10 @@ import './selectType.scss'; // Импортируйте ваш CSS файл
 import match_word from '../../../../../assets/images/match_word.svg';
 import arrow_drop_down from '../../../../../assets/images/arrow_drop_down.svg';
 import checklist from '../../../../../assets/images/checklist.svg';
-import keyboard_arrow_down from '../../../../../assets/images/keyboard_arrow_down.svg';
+//import keyboard_arrow_down from '../../../../../assets/images/keyboard_arrow_down.svg';
 import radio_button_checked from '../../../../../assets/images/radio_button_checked.svg';
+import pin from '../../../../../assets/images/pin.svg';
+import format_list_numbered from '../../../../../assets/images/format_list_numbered.svg';
 
 const SelectType = () => {
     const [selectedQuestionType, setSelectedQuestionType] = useState('');
@@ -12,10 +14,12 @@ const SelectType = () => {
     
 
     const questionTypes = [
-        { id: 'short_answer', title: 'Текст', iconSource: match_word},
+        { id: 'short_answer', title: 'Открытый вопрос', iconSource: match_word},
+        { id: 'quantitative_field', title: 'Количественное поле', iconSource: pin},
         { id: 'one_from_the_list', title: 'Один из списка', iconSource: radio_button_checked},
         { id: 'several_from_the_list', title: 'Несколько из списка', iconSource: checklist},
         { id: 'drop_down_list', title: 'Раскрывающийся список', iconSource: arrow_drop_down},
+        { id: 'rank_list', title: 'Ранговый список', iconSource: format_list_numbered}
     ];
     const [currentType, setCurrentType] = useState(questionTypes[3].id);
     const handleTypeSelect = (typeTitle, typeId) => {
