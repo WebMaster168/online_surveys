@@ -1,0 +1,137 @@
+
+
+.rankItem{
+    &__field{
+        text-align: center;
+        input{
+            border:none;
+            
+            border-radius: 5px;
+            background-color:antiquewhite;
+            text-align: center;
+            border-bottom: 4px solid red;
+            
+        }
+    }
+    &__inner{
+        padding-left: 33px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+}
+.radio input[type="radio"] {
+    display: none;
+     /* Скрыть стандартные радио-кнопки */
+}
+
+.radio {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Отступ между радио-кнопкой и текстом */
+    cursor: pointer;
+    position: relative;
+    padding-left: 30px; /* Место для пользовательского элемента */
+}
+/*
+.radio::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #363a6f; /* Цвет обводки 
+    border-radius: 50%; /* Закругленные края 
+    background-color: transparent; /* Изменяемый цвет для активного состояния 
+    transition: background-color 0.3s, border-color 0.3s; /* Плавный переход 
+    position: absolute;
+    left: 0;
+    top: 2px; /* Выравнивание по вертикали 
+}*/
+/*
+.radio input:checked + .radio::before {
+    background-color: #363a6f; /* Цвет для выбранной радио-кнопки 
+    border-color: #363a6f; /* Цвет обводки для выбранной кнопки 
+}
+*/
+.radio__text {
+    padding-top: 7px; /* Отступ для текста */
+    cursor: pointer;
+    display: inline-block;
+    //position: relative;
+    user-select: none;
+    margin-left: 5px;
+    &::before{
+        content: '';
+        display: inline-block;
+        /* Скрыто по умолчанию */
+        width: 20px;
+        height: 19px;
+        border-radius: 50%;
+        border: 3px solid #363a6f; /* Закругленные края */
+        background-color: #fff; /* Цвет внутреннего круга */
+        position: absolute;
+        left: 5px; /* Поправка по горизонтали */
+        top: 1px; 
+    }
+}
+.radio input:checked + .radio__text::after {
+    content: '';
+    /* Скрыто по умолчанию */
+    width: 14px;
+    height: 14px;
+    border-radius: 50%; /* Закругленные края */
+    background-color: #363a6f; /* Цвет внутреннего круга */
+    position: absolute;
+    left: 10px; /* Поправка по горизонтали */
+    top: 6px; /* Поправка по вертикали */
+}
+.required-answer{
+    margin-top: 20px;
+    color: red;
+    font-weight: 600;
+}
+.checkbox {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    
+    &-option{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        
+    }
+}
+
+
+.checkbox+label {
+    display: inline-flex;
+    align-items: center;
+    padding-top: 10px;
+    margin-left: 5px;
+    user-select: none;
+    cursor: pointer;
+  }
+.checkbox{
+    &+label::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 3px solid #363a6f;
+    border-radius: 7px;
+    margin-left: 2px;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    
+    }
+    &:checked{
+        &+label::before {
+            background-color: #363a6f;
+            background-image: url('./check.svg');
+        }     
+    }
+}

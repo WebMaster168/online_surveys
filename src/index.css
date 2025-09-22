@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+    box-sizing: border-box;
+}
+body{
+    font-family: "Montserrat", sans-serif;
+    background-color: #F0EBF8;
+}
+a{
+    text-decoration: none;
+    color: black;
+}
+textarea, input{
+    font-family: "Montserrat", sans-serif;
+}
+/* Для Chrome, Safari, Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+
+}
+
+/* Для Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: none;
+}
