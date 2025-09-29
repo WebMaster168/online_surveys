@@ -214,10 +214,19 @@ app.post("/saveAnswers", (req, res) => {
     if (!surveyId || !answersOnQuestions) {
         return res.status(400).json({ error: "Некорректные данные" });
     }
+    // Сначала получаем максимальный порядковый номер
+    const getMaxOrderQuery = 
+        `SELECT COALESCE(MAX(respondent_order), 0) AS maxOrder 
+        FROM survey_answers 
+        WHERE survey_id = ?`;
 
+    db.query(getMaxOrderQuery, [surveyId], (err, rows) => {
+        if (err) return res.status(500).json({ error: "Ошибка выборки", details: err });
+
+        const nextOrder = rows[0].maxOrder + 1;
     // Сохраняем общую запись об участии в опросе
-    const insertSurveyAnswerQuery = "INSERT INTO survey_answers (survey_id) VALUES (?)";
-    db.query(insertSurveyAnswerQuery, [surveyId], (err, result) => {
+    const insertSurveyAnswerQuery = "INSERT INTO survey_answers (survey_id, respondent_order) VALUES (?, ?)";
+    db.query(insertSurveyAnswerQuery, [surveyId, nextOrder], (err, result) => {
         if (err) return res.status(500).json({ error: "Ошибка сохранения анкеты", details: err });
 
         const surveyAnswerId = result.insertId;
@@ -259,7 +268,8 @@ app.post("/saveAnswers", (req, res) => {
         });
 
         if (!values.length) {
-            return res.status(200).json({ message: "Ответы сохранены (пусто)" });
+            return res.status(200).json({ message: "Ответы сохранены (пусто)",
+                    respondentOrder: nextOrder });
         }
 
         const insertAnswersQuery = 
@@ -269,16 +279,18 @@ app.post("/saveAnswers", (req, res) => {
 
         db.query(insertAnswersQuery, [values], (err2) => {
             if (err2) return res.status(500).json({ error: "Ошибка сохранения ответов", details: err2 });
-            res.status(200).json({ message: "Ответы успешно сохранены" });
+            res.status(200).json({ message: "Ответы успешно сохранены",
+                    respondentOrder: nextOrder });
         });
     });
+})
 });
 
 app.get("/downloadAnswers/:surveyId", (req, res) => {
     const surveyId = req.params.surveyId;
 
     const query = 
-        `SELECT sa.id AS survey_answer_id, sa.created_at,
+        `SELECT sa.id AS survey_answer_id, sa.created_at, sa.respondent_order AS respondent_order,
                q.id AS question_id, ao.question_text AS question_text,
                q.question_order,
                ao.answer_text
@@ -286,7 +298,7 @@ app.get("/downloadAnswers/:surveyId", (req, res) => {
         JOIN answer_on_questions ao ON sa.id = ao.survey_answer_id
         JOIN questions q ON ao.question_id = q.id
         WHERE sa.survey_id = ?
-        ORDER BY sa.id, q.question_order`
+        ORDER BY sa.respondent_order, q.question_order`
     ;
 
     db.query(query, [surveyId], async (err, results) => {
@@ -302,7 +314,8 @@ app.get("/downloadAnswers/:surveyId", (req, res) => {
 
         // Заголовки
         worksheet.columns = [
-            { header: "ID ответа", key: "survey_answer_id", width: 12 },
+            //{ header: "ID ответа", key: "survey_answer_id", width: 12 },
+            { header: "№ респондента", key: "respondent_order", width: 15 },
             { header: "Дата", key: "created_at", width: 20 },
             { header: "№ вопроса", key: "question_id", width: 12 },
             { header: "Вопрос", key: "question_text", width: 40 },
@@ -312,7 +325,8 @@ app.get("/downloadAnswers/:surveyId", (req, res) => {
         // Заполняем данными
         results.forEach(row => {
             worksheet.addRow({
-                survey_answer_id: row.survey_answer_id,
+                //survey_answer_id: row.survey_answer_id,
+                respondent_order: row.respondent_order,
                 created_at: row.created_at,
                 question_order: row.question_order,
                 question_id: row.question_id,
