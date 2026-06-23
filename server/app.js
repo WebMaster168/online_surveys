@@ -27,57 +27,190 @@ db.connect(err => {
 
 // API для сохранения анкеты
 app.post("/saveSurvey", (req, res) => {
+ 
     const { name, description, questions } = req.body;
-
-    const query = "INSERT INTO surveys (name, description) VALUES (?, ?)";
-    db.query(query, [name, description], (err, result) => {
-        if (err) return res.status(500).json(err);
-
-        const surveyId = result.insertId;
-
-        // Сохраняем вопросы с порядком
-        const questionQuery = 
-            `INSERT INTO questions (survey_id, type, text, required, question_order) VALUES ?`
-        ;
-
-        const questionValues = questions.map((q, index) => [
-            surveyId,
-            q.type,
-            q.text,
-            q.required ? 1 : 0,
-            index + 1, // порядок в анкете
-        ]);
-
-        db.query(questionQuery, [questionValues], (err, questionResult) => {
-            if (err) return res.status(500).json(err);
-
-            const firstQuestionId = questionResult.insertId;
-            const optionValues = [];
-
-            questions.forEach((q, index) => {
-                if (q.options && q.options.length) {
-                    q.options.forEach(option => {
-                        optionValues.push([
-                            firstQuestionId + index,
-                            surveyId,
-                            JSON.stringify(option), // Сохраняем объект как JSON
-                        ]);
-                    });
-                }
+ 
+    db.beginTransaction(err => {
+ 
+        if (err) {
+            return res.status(500).json({
+                message: "Ошибка начала транзакции"
             });
-
-            if (optionValues.length) {
-                const optionQuery =
-                    "INSERT INTO options (question_id, survey_id, text) VALUES ?";
-                db.query(optionQuery, [optionValues], (err) => {
-                    if (err) return res.status(500).json(err);
-                    res.status(200).json({ message: "Анкета сохранена" });
+        }
+ 
+        // 1. Сохраняем анкету
+        const surveyQuery =
+            "INSERT INTO surveys (name, description) VALUES (?, ?)";
+ 
+        db.query(
+            surveyQuery,
+            [name, description],
+            (err, surveyResult) => {
+ 
+            if (err) {
+                return db.rollback(() => {
+ 
+                    res.status(500).json({
+                        message:"Ошибка сохранения анкеты"
+                    });
+ 
                 });
-            } else {
-                res.status(200).json({ message: "Анкета сохранена" });
             }
+ 
+            const surveyId = surveyResult.insertId;
+ 
+ 
+            // 2. Сохраняем вопросы
+            const questionQuery =
+            `
+            INSERT INTO questions
+            (
+                survey_id,
+                type,
+                text,
+                required,
+                question_order
+            )
+            VALUES ?
+            `;
+ 
+ 
+            const questionValues = questions.map((q,index)=>[
+                surveyId,
+                q.type,
+                q.text,
+                q.required ? 1 : 0,
+                index + 1
+            ]);
+ 
+ 
+            db.query(
+                questionQuery,
+                [questionValues],
+                (err, questionResult)=>{
+ 
+                if(err){
+ 
+                    return db.rollback(()=>{
+ 
+                        res.status(500).json({
+                            message:"Ошибка сохранения вопросов"
+                        });
+ 
+                    });
+ 
+                }
+ 
+ 
+                // id первого добавленного вопроса
+                const firstQuestionId =
+                    questionResult.insertId;
+ 
+ 
+                // 3. Формируем варианты
+                const optionValues = [];
+ 
+ 
+                questions.forEach((q,index)=>{
+ 
+                    if(q.options && q.options.length){
+ 
+                        q.options.forEach(option=>{
+ 
+                            optionValues.push([
+                                firstQuestionId + index,
+                                surveyId,
+                                JSON.stringify(option)
+                            ]);
+ 
+                        });
+ 
+                    }
+ 
+                });
+ 
+ 
+                // если вариантов нет
+                if(!optionValues.length){
+ 
+                    return db.commit(err=>{
+ 
+                        if(err){
+ 
+                            return res.status(500).json({
+                                message:"Ошибка сохранения"
+                            });
+ 
+                        }
+ 
+                        res.json({
+                            message:"Анкета сохранена"
+                        });
+ 
+                    });
+ 
+                }
+ 
+ 
+ 
+                // 4. Сохраняем варианты
+                const optionQuery =
+                `
+                INSERT INTO options
+                (
+                    question_id,
+                    survey_id,
+                    text
+                )
+                VALUES ?
+                `;
+ 
+ 
+                db.query(
+                    optionQuery,
+                    [optionValues],
+                    err=>{
+ 
+                    if(err){
+ 
+                        return db.rollback(()=>{
+ 
+                            res.status(500).json({
+                                message:
+                                "Ошибка сохранения вариантов ответа"
+                            });
+ 
+                        });
+ 
+                    }
+ 
+ 
+                    // всё успешно
+                    db.commit(err=>{
+ 
+                        if(err){
+ 
+                            return res.status(500).json({
+                                message:"Ошибка завершения сохранения"
+                            });
+ 
+                        }
+ 
+                        res.status(200).json({
+                            message:"Анкета сохранена"
+                        });
+ 
+                    });
+ 
+                });
+ 
+ 
+            });
+ 
         });
+ 
     });
+ 
 });
 app.get("/getSurvey/:id", (req, res) => {
     const surveyId = req.params.id;

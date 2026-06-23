@@ -42,6 +42,8 @@ const NewSurveyPage = ({loading}) => {
             navigate("/surveys")
         } catch (error) {
             console.error("Ошибка сохранения:", error);
+            const message = error.response?.data?.message || `Не удалось сохранить анкету. \nПроверьте подключение к серверу`
+            alert(message)
         }
     };
     const updateCheckboxRequired = (questionIndex, checked) => {
