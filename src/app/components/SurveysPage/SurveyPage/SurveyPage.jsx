@@ -91,50 +91,37 @@ const SurveyPage= () => {
    
                       break;
    
-                  case "rank_list": {
-   
-                      if (
-                          ans.length !== question.options.length
-                      ) {
-   
-                          errors.push(
-                              `В вопросе "${question.text}" заполнены не все ранги`
-                          );
-   
-                          break;
-                      }
-   
-                      const ranks =
-                          ans.map(a =>
-                              String(a.value).trim()
-                          );
-   
-                      if (
-                          ranks.some(rank => rank === "")
-                      ) {
-   
-                          errors.push(
-                              `В вопросе "${question.text}" есть пустые ранги`
-                          );
-   
-                          break;
-                      }
-   
-                      const uniqueRanks =
-                          new Set(ranks);
-   
-                      if (
-                          uniqueRanks.size !== ranks.length
-                      ) {
-   
-                          errors.push(
-                              `В вопросе "${question.text}" используются одинаковые ранги`
-                          );
-   
-                      }
-   
-                      break;
-                  }
+                      case "rank_list": {
+ 
+                        const ranks = ans.map(a =>
+                            String(a.value ?? "").trim()
+                        );
+                     
+                        const isAnswered =
+                            ans.length === question.options.length &&
+                            !ranks.some(rank => rank === "");
+                     
+                        if (question.required && !isAnswered) {
+                     
+                            errors.push(
+                                `Не заполнен обязательный вопрос "${question.text}"`
+                            );
+                     
+                            break;
+                        }
+                     
+                        const uniqueRanks = new Set(ranks);
+                     
+                        if (uniqueRanks.size !== ranks.length) {
+                     
+                            errors.push(
+                                `В вопросе "${question.text}" используются одинаковые ранги`
+                            );
+                     
+                        }
+                     
+                        break;
+                    }
    
                   default:
                       break;
