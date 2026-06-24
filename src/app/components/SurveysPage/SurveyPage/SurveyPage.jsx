@@ -15,59 +15,195 @@ const SurveyPage= () => {
     });
 
     const handleSubmit = async () => {
-        if (!survey?.questions) return;
-
-        // Собираем список обязательных вопросов без ответа
-        const unansweredRequired = survey.questions.filter((q, index) => {
-            if (!q.required) return false;
-
-            // ищем все ответы на этот вопрос
-            const ans = answers.answersOnQuestions?.filter(a => a.questionId === (index + 1));
-
-            if (!ans || ans.length === 0) return true; // нет вообще
-
-            switch (q.type) {
-            case "short_answer":
-            case "quantitative_field":
-                // у этих value должно быть не пустое
-                return ans.some(a => !a.value || a.value.toString().trim() === "");
-
-            case "one_from_the_list":
-                // должен быть хотя бы один option
-                return ans.every(a => !a.options || a.options.length === 0);
-
-            case "several_from_the_list":
-                // аналогично, только несколько можно, но хотя бы 1
-                return ans.every(a => !a.options || a.options.length === 0);
-
-            case "rank_list":
-                // у всех вариантов должно быть выставлено value
-                return ans.some(a => !a.value || a.value.toString().trim() === "");
-
-            default:
-                return false;
-            }
-        });
-
-        if (unansweredRequired.length > 0) {
-            alert("Вы не ответили на обязательные вопросы");
-            return;
-        }
-
-        // если все обязательные есть → сохраняем
-        try {
-            const response = await fetch("http://localhost:5000/saveAnswers", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(answers),
-            });
-            const data = await response.json();
-            console.log("Ответ сервера:", data);
-            setSubmitted(true);
-        } catch (error) {
-            console.error("Ошибка при сохранении ответов:", error);
-        }
-        };
+ 
+      if (!survey?.questions) return;
+   
+      const errors = [];
+   
+      survey.questions.forEach((question, questionIndex) => {
+   
+          const ans =
+              answers.answersOnQuestions.filter(
+                  answer =>
+                      answer.questionId === questionIndex + 1
+              );
+   
+          // Проверка обязательных вопросов
+          if (question.required) {
+   
+              switch (question.type) {
+   
+                  case "short_answer":
+                  case "quantitative_field":
+   
+                      if (
+                          ans.length === 0 ||
+                          ans.some(
+                              a =>
+                                  !a.value ||
+                                  a.value.toString().trim() === ""
+                          )
+                      ) {
+   
+                          errors.push(
+                              `Не заполнен обязательный вопрос "${question.text}"`
+                          );
+   
+                      }
+   
+                      break;
+   
+                  case "one_from_the_list":
+   
+                      if (
+                          ans.length === 0 ||
+                          ans.every(
+                              a =>
+                                  !a.options ||
+                                  a.options.length === 0
+                          )
+                      ) {
+   
+                          errors.push(
+                              `Не заполнен обязательный вопрос "${question.text}"`
+                          );
+   
+                      }
+   
+                      break;
+   
+                  case "several_from_the_list":
+   
+                      if (
+                          ans.length === 0 ||
+                          ans.every(
+                              a =>
+                                  !a.options ||
+                                  a.options.length === 0
+                          )
+                      ) {
+   
+                          errors.push(
+                              `Не заполнен обязательный вопрос "${question.text}"`
+                          );
+   
+                      }
+   
+                      break;
+   
+                  case "rank_list": {
+   
+                      if (
+                          ans.length !== question.options.length
+                      ) {
+   
+                          errors.push(
+                              `В вопросе "${question.text}" заполнены не все ранги`
+                          );
+   
+                          break;
+                      }
+   
+                      const ranks =
+                          ans.map(a =>
+                              String(a.value).trim()
+                          );
+   
+                      if (
+                          ranks.some(rank => rank === "")
+                      ) {
+   
+                          errors.push(
+                              `В вопросе "${question.text}" есть пустые ранги`
+                          );
+   
+                          break;
+                      }
+   
+                      const uniqueRanks =
+                          new Set(ranks);
+   
+                      if (
+                          uniqueRanks.size !== ranks.length
+                      ) {
+   
+                          errors.push(
+                              `В вопросе "${question.text}" используются одинаковые ранги`
+                          );
+   
+                      }
+   
+                      break;
+                  }
+   
+                  default:
+                      break;
+              }
+          }
+   
+          // Дополнительная проверка rank_list
+          if (question.type === "rank_list") {
+   
+              const ranks =
+                  ans
+                      .map(a => String(a.value).trim())
+                      .filter(rank => rank !== "");
+   
+              const uniqueRanks =
+                  new Set(ranks);
+   
+              if (
+                  uniqueRanks.size !== ranks.length
+              ) {
+   
+                  errors.push(
+                      `В вопросе "${question.text}" используются одинаковые ранги`
+                  );
+   
+              }
+          }
+   
+      });
+   
+      if (errors.length > 0) {
+   
+          alert(errors.join("\n"));
+   
+          return;
+      }
+   
+      try {
+   
+          const response = await fetch(
+              "http://localhost:5000/saveAnswers",
+              {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify(answers)
+              }
+          );
+   
+          const data = await response.json();
+   
+          console.log(
+              "Ответ сервера:",
+              data
+          );
+   
+          setSubmitted(true);
+   
+      } catch (error) {
+   
+          console.error(
+              "Ошибка при сохранении ответов:",
+              error
+          );
+   
+      }
+   
+  };
     
     const next = () => {
         // ✅ редирект на эту же страницу
@@ -150,28 +286,67 @@ const SurveyPage= () => {
         });
     }
 
-    const updateRankAnswer = (questionId, value, optionId, questionText, optionText) => {
-      setAnswers((prevState) => {
-        const existingAnswerIndex = prevState.answersOnQuestions.findIndex(a => a.questionId === questionId  && a.optionId === optionId);
-        
-        let updatedRankAnswers;
-        if (existingAnswerIndex !== -1) {
-          // Если ответ уже есть, обновляем его
-          
-          updatedRankAnswers = prevState.answersOnQuestions.map(a =>
-            a.questionId === questionId && a.optionId === optionId ? { ...a, value } : a
-          );
-        } else {
-          // Если ответа нет, добавляем новый
-          updatedRankAnswers = [...prevState.answersOnQuestions, {questionId, questionText, optionId, optionText, value}];
-        }
-          
-        return {
-            ...prevState,
-            answersOnQuestions: updatedRankAnswers
-        }
-      })
-    } 
+    const updateRankAnswer = (
+      questionId,
+      value,
+      optionId,
+      questionText,
+      optionText
+  ) => {
+   
+      setAnswers(prevState => {
+   
+          const existingIndex =
+              prevState.answersOnQuestions.findIndex(
+                  answer =>
+                      answer.questionId === questionId &&
+                      answer.optionId === optionId
+              );
+   
+          let updatedAnswers;
+   
+          if (existingIndex !== -1) {
+   
+              updatedAnswers =
+                  prevState.answersOnQuestions.map(answer =>
+   
+                      answer.questionId === questionId &&
+                      answer.optionId === optionId
+   
+                          ? {
+                              ...answer,
+                              value: value
+                          }
+   
+                          : answer
+                  );
+   
+          } else {
+   
+              updatedAnswers = [
+                  ...prevState.answersOnQuestions,
+                  {
+                      questionId,
+                      questionText,
+                      optionId,
+                      optionText,
+                      value
+                  }
+              ];
+   
+          }
+   
+          return {
+              ...prevState,
+              answersOnQuestions: updatedAnswers
+          };
+   
+      });
+   
+  };
+
+  
+
 
     const updateCheckboxAnswer = (questionId, optionId, text, isChecked, questionText ) => {
       

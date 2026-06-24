@@ -32,9 +32,88 @@ const NewSurveyPage = ({loading}) => {
         ],
       });
       
-      
-       
+      const validationClient = () => {
+ 
+        const errors = [];
+     
+        if (!survey.name.trim()) {
+            errors.push("Введите название анкеты");
+        }
+     
+        if (survey.name === "Новая анкета") {
+            errors.push(
+                "Название анкеты содержит шаблонное значение"
+            );
+        }
+     
+        if (survey.name.length > 255) {
+            errors.push("Название анкеты слишком длинное");
+        }
+     
+        if (!survey.description.trim()) {
+            errors.push("Введите описание анкеты");
+        }
+     
+        if (survey.description === "Описание") {
+            errors.push(
+                "Описание анкеты содержит шаблонное значение"
+            );
+        }
+     
+        if (survey.questions.length < 2) {
+            errors.push(
+                "В анкете должно быть минимум два вопроса"
+            );
+        }
+     
+     
+        survey.questions.forEach((question, index) => {
+ 
+            if (!question.text.trim()) {
+                errors.push(`Вопрос №${index + 1} пустой`);
+            }
+         
+            if (
+                question.type !== "short_answer" &&
+                question.type !== "quantitative_field"
+            ) {
+         
+                if (
+                    !question.options ||
+                    question.options.length < 2
+                ) {
+                    errors.push(
+                        `В вопросе №${index + 1} должно быть минимум 2 варианта ответа`
+                    );
+                }
+         
+                question.options?.forEach(option => {
+         
+                    if (!option.text.trim()) {
+                        errors.push(
+                            `В вопросе №${index + 1} есть пустой вариант ответа`
+                        );
+                    }
+         
+                    if (option.text === "Введите вариант ответа") {
+                        errors.push(
+                            `В вопросе №${index + 1} шаблонный вариант ответа`
+                        );
+                    }
+         
+                });
+            }
+        });
+     
+        return errors;
+    };
       const saveSurvey = async () => {
+        
+        const errors = validationClient()
+        if(errors.length){
+            return alert(errors.join("\n \n"))
+        }
+
         try {
             
             const response = await axios.post("http://localhost:5000/saveSurvey", survey);

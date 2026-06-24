@@ -25,9 +25,101 @@ db.connect(err => {
     console.log("Подключено к MySQL");
 });
 
+const validateSurvey = (survey) => {
+ 
+    if (!survey) {
+        return "Пустое тело запроса";
+    }
+ 
+    const { name, description, questions } = survey;
+ 
+    if (typeof name !== "string" || !name.trim()) {
+        return "Название анкеты обязательно";
+    }
+ 
+    if (name === "Новая анкета") {
+        return "Шаблонное название анкеты запрещено";
+    }
+ 
+    if (name.length > 255) {
+        return "Название анкеты слишком длинное";
+    }
+ 
+    if (typeof description !== "string" || !description.trim()) {
+        return "Описание анкеты обязательно";
+    }
+ 
+    if (description === "Описание") {
+        return "Шаблонное описание запрещено";
+    }
+ 
+    if (!Array.isArray(questions)) {
+        return "Вопросы должны быть массивом";
+    }
+ 
+    if (questions.length < 2) {
+        return "Минимум 2 вопроса";
+    }
+ 
+    const typesWithOptions = [
+        "one_from_the_list",
+        'several_from_the_list',
+        'rank_list'
+    ];
+ 
+    for (let i = 0; i < questions.length; i++) {
+ 
+        const q = questions[i];
+ 
+        if (!q.text || !q.text.trim()) {
+            return `Вопрос ${i + 1}: пустой текст`;
+        }
+ 
+        if (
+            typesWithOptions.includes(q.type)
+        ) {
+ 
+            if (
+                !Array.isArray(q.options) ||
+                q.options.length < 2
+            ) {
+                return `Вопрос ${i + 1}: минимум 2 варианта ответа`;
+            }
+ 
+            for (let j = 0; j < q.options.length; j++) {
+ 
+                const opt = q.options[j];
+ 
+                if (!opt.text || !opt.text.trim()) {
+                    return `Вопрос ${i + 1}: пустой вариант ответа`;
+                }
+ 
+                if (opt.text === "Введите вариант ответа") {
+                    return `Вопрос ${i + 1}: шаблонный вариант ответа`;
+                }
+            }
+ 
+            const values = q.options.map(o =>
+                o.text.trim().toLowerCase()
+            );
+ 
+            if (new Set(values).size !== values.length) {
+                return `Вопрос ${i + 1}: есть дубликаты вариантов`;
+            }
+        }
+    }
+ 
+    return null;
+};
+
 // API для сохранения анкеты
 app.post("/saveSurvey", (req, res) => {
- 
+    const error = validateSurvey(req.body)
+    if(error){
+        return res.status(400).json({
+            message: error
+        })
+    }
     const { name, description, questions } = req.body;
  
     db.beginTransaction(err => {
